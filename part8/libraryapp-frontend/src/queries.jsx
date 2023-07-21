@@ -41,8 +41,8 @@ mutation createBook($title: String!, $author: String!, $publishedInt: Int!, $gen
 `
 
 export const EDIT_AGE = gql`
-mutation editAge($name: String!, $ageInt: Int!){
-  editAuthor(name: $name, setBornTo: $ageInt){
+mutation editAge($nameValue: String!, $ageInt: Int!){
+  editAuthor(name: $nameValue, setBornTo: $ageInt){
     name
     born
     bookCount

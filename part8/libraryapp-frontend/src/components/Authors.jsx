@@ -29,7 +29,7 @@ const Authors = (props) => {
       </div>
       <div>
         <h2>Set Birthday</h2>
-        <AuthorForm />
+        <AuthorForm authors={authors}/>
       </div>
     </>
     )
