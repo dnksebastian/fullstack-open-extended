@@ -1,9 +1,10 @@
 import AuthorForm from './AuthorForm'
 
 const Authors = (props) => {
-    if (!props.show) {
-      return null
-    }
+    // if (!props.show) {
+    //   return null
+    // }
+
     const authors = [...props.allauthors]
   
     return (
