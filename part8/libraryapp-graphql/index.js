@@ -1,5 +1,7 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
+const { GraphQLError } = require('graphql')
+
 
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
@@ -102,8 +104,39 @@ const resolvers = {
   Mutation: {
     addAuthor: async (root, args) => {
       const author = new Author({ ...args })
-      const result = await author.save()
-      return result
+      
+      try {
+        const result = await author.save()
+        return result
+      } catch (error) {
+        if(error.errors.name.kind === 'required') {
+          throw new GraphQLError('Saving author failed - name is required', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.name,
+              error
+            }
+          })
+        }
+        else if(error.errors.name.kind === 'unique') {
+          throw new GraphQLError('Saving author failed - author is already in database', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.name,
+              error
+            }
+          })
+        } else if (error.errors.name.kind === 'minlength') {
+          throw new GraphQLError('Saving author failed - name must have at least 4 letters', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.name,
+              error
+            }
+          })
+        }
+      }
+
     },
     addBook: async (root, args) => {
       const checkAuthor = await Author.findOne({name: args.author})
@@ -111,26 +144,80 @@ const resolvers = {
 
       if (!checkAuthor) {
         const newAuthor = new Author({name: args.author})
-        bookAuthor = await newAuthor.save()
+        try {
+          bookAuthor = await newAuthor.save()
+        }
+        catch (error) {
+          throw new GraphQLError('Saving book failed - please enter correct author name', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.name,
+              error
+            }
+          })
+        }
       } else {
         bookAuthor = checkAuthor
       }
 
       if(bookAuthor) {
         const newBook = new Book({ ...args, author: bookAuthor._id })
-        const result = await newBook.save()
-        return await result.populate('author')
+        
+        try {
+          const result = await newBook.save()
+          return await result.populate('author')
+        }
+        catch (error) {
+
+          if (error.errors.title.kind === 'required') {
+            throw new GraphQLError('Saving book failed - missing book title', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+                invalidArgs: args.title,
+                error
+              }
+            })
+          }
+          else if (error.errors.title.kind === 'unique') {
+            throw new GraphQLError('Saving book failed - book already in database', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+                invalidArgs: args.title,
+                error
+              }
+            })
+          }
+          else if (error.errors.title.kind === 'minlength') {
+            throw new GraphQLError('Saving book failed - title must be at least 5 characters long', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+                invalidArgs: args.title,
+                error
+              }
+            })
+          }
+        }
+
       }
       
     },
     editAuthor: async (root, args) => {
-      // const author = authors.find(a => a.name === args.name)
-      // if (!author) {
-      //   return null
-      // }
-      // const updatedAuthor = { ...author, born: args.setBornTo }
-      // authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
-      // return updatedAuthor
+
+        const author = await Author.findOneAndUpdate({ name: args.name }, { born: args.setBornTo }, { new: true })
+
+        if (!author) {
+          throw new GraphQLError('Something went wrong - please check entered data', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              error
+            }
+          })
+          // return null
+        }
+
+        return author
+
+
     }
   }
 }
