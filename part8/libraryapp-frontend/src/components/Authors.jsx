@@ -28,10 +28,11 @@ const Authors = (props) => {
           </tbody>
         </table>
       </div>
+      {props.token &&
       <div>
         <h2>Set Birthday</h2>
         <AuthorForm authors={authors}/>
-      </div>
+      </div>}
     </>
     )
   }

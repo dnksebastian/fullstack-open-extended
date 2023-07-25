@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import Select from 'react-select'
 
@@ -20,6 +20,7 @@ const selectStyles = {
 }
 
 
+
 const AuthorForm = (props) => {
     const [name, setName] = useState('');
     const [born, setBorn] = useState('')
@@ -30,7 +31,8 @@ const AuthorForm = (props) => {
     const [ editAge, result ] = useMutation(EDIT_AGE, {
         refetchQueries: [ { query: ALL_AUTHORS } ]
     })
-
+    
+    const selectInput = useRef()
 
     const submit = async (e) => {
         e.preventDefault()
@@ -44,6 +46,7 @@ const AuthorForm = (props) => {
 
         setName('')
         setBorn('')
+        selectInput.current.clearValue()
     }
 
     useEffect(() => {
@@ -56,10 +59,12 @@ const AuthorForm = (props) => {
         <div>
             <form onSubmit={submit}>
                 <Select
+                ref={selectInput}
                 defaultValue={name}
                 onChange={setName}
                 options={options}
                 styles={selectStyles}
+                isClearable
                 />
                 <div>
                     born
