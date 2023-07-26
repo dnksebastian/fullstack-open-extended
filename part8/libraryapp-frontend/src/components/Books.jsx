@@ -1,13 +1,27 @@
+import { useState } from "react"
+
 const Books = (props) => {
-    // if (!props.show) {
-    //   return null
-    // }
-  
+
+    const [genre, setGenre] = useState('')
+ 
     const books = [...props.allbooks]
+
+    let booksByGenre
+
+    if (genre) {
+      booksByGenre = books.filter(b => b.genres.includes(genre))
+    } else {
+      booksByGenre = books
+    }
+
+    const genresArrs = books.map(book => book.genres)
+    const mergedGenres = [...new Set([].concat(...genresArrs))]
   
     return (
       <div>
         <h2>books</h2>
+
+        <p>in genre <b>{genre ? genre : 'all genres'}</b></p>
   
         <table>
           <tbody>
@@ -16,7 +30,7 @@ const Books = (props) => {
               <th>author</th>
               <th>published</th>
             </tr>
-            {books.map((a) => (
+            {booksByGenre.map((a) => (
               <tr key={a.title}>
                 <td>{a.title}</td>
                 <td>{a.author.name}</td>
@@ -25,6 +39,12 @@ const Books = (props) => {
             ))}
           </tbody>
         </table>
+
+        <div>
+          {mergedGenres.map(g => <button key={g} onClick={() => {setGenre(g)}}>{g}</button>)}
+          <button onClick={() => {setGenre('')}}>all genres</button>
+        </div>
+
       </div>
     )
   }

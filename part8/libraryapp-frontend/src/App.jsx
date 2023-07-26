@@ -12,8 +12,9 @@ import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
+import RecommendBooks from './components/RecommendBooks'
 
-import { ALL_AUTHORS, ALL_BOOKS } from './queries'
+import { ALL_AUTHORS, ALL_BOOKS, GET_CURRENT_USER } from './queries'
 
 
 const linkStyle = {
@@ -36,14 +37,16 @@ const App = () => {
 
   const authorsResult = useQuery(ALL_AUTHORS)
   const booksResult = useQuery(ALL_BOOKS)
+  const currentUser = useQuery(GET_CURRENT_USER, {
+    skip: !localStorage.getItem('userToken')
+  })
 
   useEffect(() => {
     setToken(localStorage.getItem('userToken'))
-  }, [])
+  }, [])// eslint-disable-line
 
-  console.log(token)
 
-  if (authorsResult.loading || booksResult.loading) {
+  if (authorsResult.loading || booksResult.loading || currentUser.loading) {
     return <div>loading...</div>
   }
 
@@ -60,6 +63,7 @@ const App = () => {
         <Link style={linkStyle} to="/books">books</Link>
         {!token && <Link style={linkStyle} to="/login">login</Link>}
         {token && <Link style={linkStyle} to="/add">add book</Link>}
+        {token && <Link style={linkStyle} to="/recommend">recommend</Link>}
         {token && <Link style={linkStyle} to="/logout" onClick={logout}>logout</Link>}
       </div>
       <Routes>
@@ -67,6 +71,7 @@ const App = () => {
         <Route path='/books' element={ <Books allbooks={booksResult.data.allBooks}/> }/>
         <Route path='/login' element={ !token ? <LoginForm setToken={setToken} /> : <Navigate to="/" />}/>
         <Route path='/add' element={ token ? <NewBook /> : <Navigate to="/" /> }/>
+        <Route path='/recommend' element={ currentUser ? <RecommendBooks allbooks={booksResult.data.allBooks} user={currentUser} /> : <Navigate to="/" /> }/>
         <Route path='/logout' element={ <Navigate to="/" /> }/>
         {/*  */}
         <Route path="*" element={<Navigate to="/" />}/>
