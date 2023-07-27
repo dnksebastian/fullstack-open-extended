@@ -26,6 +26,21 @@ query {
 }
 `
 
+export const BOOKS_BY_GENRE = gql `
+query getBooksByGenre($genreFilter: String!){
+  allBooks(genre: $genreFilter) {
+    title
+    published
+    author {
+      name
+      born
+      bookCount
+    }
+    genres
+  }
+}
+`
+
 export const ADD_BOOK = gql`
 mutation createBook($title: String!, $author: String!, $publishedInt: Int!, $genres: [String!]){
   addBook(

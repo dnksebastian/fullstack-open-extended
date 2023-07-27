@@ -1,16 +1,24 @@
+import { useQuery } from '@apollo/client'
+import { BOOKS_BY_GENRE } from '../queries'
+
 const RecommendBooks = ({ user, allbooks }) => {
+  
+  const favoriteGenre = user.data.me.favoriteGenre
+
+  const booksByFilterResult = useQuery(BOOKS_BY_GENRE, {
+    variables: { genreFilter: favoriteGenre }
+  })
 
     if (user.loading) {
         return <div>loading...</div>
-      }
-    
-    const favoriteGenre = user.data.me.favoriteGenre
+    }
 
     let booksToDisplay
-    const booksByFavoriteGenre = allbooks.filter(b => b.genres.includes(favoriteGenre))
 
-    if (booksByFavoriteGenre.length > 0) {
-     booksToDisplay = booksByFavoriteGenre
+    // const booksByFavoriteGenre = allbooks.filter(b => b.genres.includes(favoriteGenre))
+
+    if (booksByFilterResult.length > 0) {
+     booksToDisplay = booksByFilterResult
     } else {
      booksToDisplay = allbooks
     }
@@ -20,7 +28,7 @@ const RecommendBooks = ({ user, allbooks }) => {
         <h2>recommendations</h2>
 
         {
-        booksByFavoriteGenre.length > 0 ?
+        booksByFilterResult.length > 0 ?
         <p>books in your favorite genre <b>{favoriteGenre}</b></p>
         : 
         <p>could not find books in genre <b>{favoriteGenre}</b>, displaying all books </p>

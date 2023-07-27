@@ -118,7 +118,6 @@ const resolvers = {
     bookCount: async () => Book.collection.countDocuments(),
     authorCount: async () => Author.collection.countDocuments(),
     me: (root, args, context) => {
-      console.log(context);
       return context.currentUser
     }
   },

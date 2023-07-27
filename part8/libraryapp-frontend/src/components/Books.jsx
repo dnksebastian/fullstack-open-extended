@@ -1,20 +1,35 @@
 import { useState } from "react"
+import { useQuery } from '@apollo/client'
+import { BOOKS_BY_GENRE } from '../queries'
 
-const Books = (props) => {
-
+const Books = ({ allbooks }) => {
     const [genre, setGenre] = useState('')
- 
-    const books = [...props.allbooks]
 
-    let booksByGenre
+    const booksByFilterResult = useQuery(BOOKS_BY_GENRE, {
+      variables: { genreFilter: genre }
+    })
 
-    if (genre) {
-      booksByGenre = books.filter(b => b.genres.includes(genre))
-    } else {
-      booksByGenre = books
+    
+    if (booksByFilterResult.loading) {
+      return <div>loading...</div>
     }
+    
+    const booksToDisplay = booksByFilterResult.data.allBooks
 
-    const genresArrs = books.map(book => book.genres)
+
+    // console.log(booksByFilterResult)
+ 
+    // const books = [...props.allbooks]
+
+    // let booksByGenre
+
+    // if (genre) {
+    //   booksByGenre = books.filter(b => b.genres.includes(genre))
+    // } else {
+    //   booksByGenre = books
+    // }
+
+    const genresArrs = allbooks.map(book => book.genres)
     const mergedGenres = [...new Set([].concat(...genresArrs))]
   
     return (
@@ -30,7 +45,7 @@ const Books = (props) => {
               <th>author</th>
               <th>published</th>
             </tr>
-            {booksByGenre.map((a) => (
+            {booksToDisplay.map((a) => (
               <tr key={a.title}>
                 <td>{a.title}</td>
                 <td>{a.author.name}</td>
