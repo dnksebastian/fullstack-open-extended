@@ -14,7 +14,13 @@ const Books = ({ allbooks }) => {
       return <div>loading...</div>
     }
     
-    const booksToDisplay = booksByFilterResult.data.allBooks
+    let booksToDisplay
+
+    if(!genre) {
+      booksToDisplay = allbooks
+    } else {
+      booksToDisplay = booksByFilterResult.data.allBooks
+    }
 
 
     // console.log(booksByFilterResult)

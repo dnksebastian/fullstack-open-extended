@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client'
+import { useQuery, useSubscription } from '@apollo/client'
 import { useState, useEffect } from 'react'
 import { useApolloClient } from '@apollo/client'
 
@@ -14,7 +14,7 @@ import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import RecommendBooks from './components/RecommendBooks'
 
-import { ALL_AUTHORS, ALL_BOOKS, GET_CURRENT_USER } from './queries'
+import { ALL_AUTHORS, ALL_BOOKS, BOOK_ADDED, GET_CURRENT_USER } from './queries'
 
 
 const linkStyle = {
@@ -30,6 +30,25 @@ const navStyle = {
   marginBottom: 30
 }
 
+/* eslint-disable */
+export const updateCache = (cache, query, addedBook) => {
+  const uniqueBookByTitle = (b) => {
+    let seen = new Set()
+    return b.filter((i) => {
+      let check = i.title
+      return seen.has(check) ? false : seen.add(check)
+    })
+  }
+
+  cache.updateQuery(query, ({ allBooks }) => {
+    return {
+      allBooks: uniqueBookByTitle(allBooks.concat(addedBook)),
+    }
+  })
+
+}
+/* eslint-enable */
+
 
 const App = () => {
   const client = useApolloClient()
@@ -44,6 +63,20 @@ const App = () => {
   useEffect(() => {
     setToken(localStorage.getItem('userToken'))
   }, [])// eslint-disable-line
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({data}) => {
+      const addedBook = data.data.bookAdded
+
+      updateCache(client.cache, { query: ALL_BOOKS }, addedBook)
+
+      // window.alert(`Book ${addedBook.title} by ${addedBook.author.name} has been added!`)
+      console.log(`Book ${addedBook.title} by ${addedBook.author.name} has been added!`)
+    },
+    onError: (err) => {
+      console.log(err)
+    }
+  })
 
 
   if (authorsResult.loading || booksResult.loading || currentUser.loading) {
