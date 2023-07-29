@@ -22,14 +22,19 @@ const selectStyles = {
 
 
 const AuthorForm = (props) => {
-    const [name, setName] = useState('');
+    const [name, setName] = useState('')
     const [born, setBorn] = useState('')
 
     const authorsData = props.authors    
     const options = authorsData.map(author => { return { value: author.name, label: author.name }})
 
     const [ editAge, result ] = useMutation(EDIT_AGE, {
-        refetchQueries: [ { query: ALL_AUTHORS } ]
+        refetchQueries: [ { query: ALL_AUTHORS } ],
+        onError: (err) => {
+            const msg = err.graphQLErrors[0].message
+            console.log(msg);
+            props.handleNotification('Could not update authors age, please check entered data')
+        }
     })
     
     const selectInput = useRef()
@@ -40,7 +45,6 @@ const AuthorForm = (props) => {
 
         const ageInt = parseInt(born)
         const nameValue = name.value
-        console.log(nameValue)
 
         editAge({ variables: {nameValue, ageInt} })
 

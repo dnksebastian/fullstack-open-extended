@@ -1,24 +1,49 @@
-import { useQuery } from '@apollo/client'
-import { BOOKS_BY_GENRE } from '../queries'
+import { useQuery, useSubscription } from '@apollo/client'
+import { BOOKS_BY_GENRE, BOOK_ADDED } from '../queries'
+import { useApolloClient } from '@apollo/client'
 
 const RecommendBooks = ({ user, allbooks }) => {
-  
+  const client = useApolloClient()  
   const favoriteGenre = user.data.me.favoriteGenre
 
   const booksByFilterResult = useQuery(BOOKS_BY_GENRE, {
     variables: { genreFilter: favoriteGenre }
   })
 
-    if (user.loading) {
-        return <div>loading...</div>
+  useSubscription(BOOK_ADDED, {
+    onData: ({data}) => {
+      const addedBook = data.data.bookAdded
+
+      const uniqueBookByTitle = (b) => {
+        let seen = new Set()
+        return b.filter((i) => {
+          let check = i.title
+          return seen.has(check) ? false : seen.add(check)
+        })
+      }
+
+      client.cache.updateQuery({query: BOOKS_BY_GENRE, variables: {genreFilter: favoriteGenre}}, ({allBooks}) => {
+        return {
+          allBooks: uniqueBookByTitle(allBooks.concat(addedBook))
+        }
+      })
+
+    },
+    onError: (err) => {
+      console.log(err)
     }
+  })
+
+  
+  if (user.loading || booksByFilterResult.loading) {
+    return <div>loading...</div>
+  }
+
 
     let booksToDisplay
 
-    // const booksByFavoriteGenre = allbooks.filter(b => b.genres.includes(favoriteGenre))
-
-    if (booksByFilterResult.length > 0) {
-     booksToDisplay = booksByFilterResult
+    if (booksByFilterResult.data.allBooks.length > 0) {
+      booksToDisplay = booksByFilterResult.data.allBooks
     } else {
      booksToDisplay = allbooks
     }
@@ -28,7 +53,7 @@ const RecommendBooks = ({ user, allbooks }) => {
         <h2>recommendations</h2>
 
         {
-        booksByFilterResult.length > 0 ?
+        booksByFilterResult.data.allBooks.length > 0 ?
         <p>books in your favorite genre <b>{favoriteGenre}</b></p>
         : 
         <p>could not find books in genre <b>{favoriteGenre}</b>, displaying all books </p>

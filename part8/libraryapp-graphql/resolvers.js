@@ -136,7 +136,6 @@ const resolvers = {
             return populatedResult
           }
           catch (error) {
-  
             if (error.errors.title.kind === 'required') {
               throw new GraphQLError('Saving book failed - missing book title', {
                 extensions: {
@@ -164,6 +163,14 @@ const resolvers = {
                 }
               })
             }
+            else {
+              throw new GraphQLError('Saving book failed - please check entered data!', {
+                extensions: {
+                  code: 'BAD_USER_INPUT',
+                  error
+                }
+              })
+            }
           }
         }
       },
@@ -178,20 +185,19 @@ const resolvers = {
           })
         }
   
+        try {
           const author = await Author.findOneAndUpdate({ name: args.name }, { born: args.setBornTo }, { new: true })
-  
-          if (!author) {
-            throw new GraphQLError('Something went wrong - please check entered data', {
-              extensions: {
-                code: 'BAD_USER_INPUT',
-                error
-              }
-            })
-            // return null
-          }
-  
           return author
-  
+        }
+        catch (error) {
+          throw new GraphQLError('Something went wrong - please check entered data', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              error
+            }
+          }
+          )
+        }
   
       },
       createUser: async (root, args) => {

@@ -1,12 +1,39 @@
 import { useState } from "react"
-import { useQuery } from '@apollo/client'
-import { BOOKS_BY_GENRE } from '../queries'
+import { useQuery, useSubscription } from '@apollo/client'
+import { BOOK_ADDED, BOOKS_BY_GENRE } from '../queries'
+import { useApolloClient } from '@apollo/client'
+
 
 const Books = ({ allbooks }) => {
     const [genre, setGenre] = useState('')
+    const client = useApolloClient()  
 
     const booksByFilterResult = useQuery(BOOKS_BY_GENRE, {
       variables: { genreFilter: genre }
+    })
+
+    useSubscription(BOOK_ADDED, {
+      onData: ({data}) => {
+        const addedBook = data.data.bookAdded
+
+        const uniqueBookByTitle = (b) => {
+          let seen = new Set()
+          return b.filter((i) => {
+            let check = i.title
+            return seen.has(check) ? false : seen.add(check)
+          })
+        }
+  
+        client.cache.updateQuery({query: BOOKS_BY_GENRE, variables: {genreFilter: genre}}, ({allBooks}) => {
+          return {
+            allBooks: uniqueBookByTitle(allBooks.concat(addedBook))
+          }
+        })
+  
+      },
+      onError: (err) => {
+        console.log(err)
+      }
     })
 
     
@@ -22,18 +49,6 @@ const Books = ({ allbooks }) => {
       booksToDisplay = booksByFilterResult.data.allBooks
     }
 
-
-    // console.log(booksByFilterResult)
- 
-    // const books = [...props.allbooks]
-
-    // let booksByGenre
-
-    // if (genre) {
-    //   booksByGenre = books.filter(b => b.genres.includes(genre))
-    // } else {
-    //   booksByGenre = books
-    // }
 
     const genresArrs = allbooks.map(book => book.genres)
     const mergedGenres = [...new Set([].concat(...genresArrs))]

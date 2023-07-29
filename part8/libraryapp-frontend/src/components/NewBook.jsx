@@ -1,22 +1,28 @@
 import { useState } from 'react'
 
-import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS, BOOKS_BY_GENRE } from '../queries'
+import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from '../queries'
 import { useMutation } from '@apollo/client'
 
 import { updateCache } from '../App'
 
 
-const NewBook = () => {
+const NewBook = ({ setNotification }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [published, setPublished] = useState('')
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
+
+  // const genreBooks = useQuery(BOOKS_BY_GENRE, {
+  //   variables: { genreFilter: genre }
+  // })
+
   const [ createBook ] = useMutation(ADD_BOOK, {
-    refetchQueries: [ { query: ALL_BOOKS }, { query: ALL_AUTHORS }, { query: BOOKS_BY_GENRE }],
+    refetchQueries: [ ALL_BOOKS , ALL_AUTHORS],
     onError: (err) => {
       console.log(err)
+      setNotification('Something went wrong')
     },
     update: (cache, response) => {
       updateCache(cache, { query: ALL_BOOKS }, response.data.addBook)

@@ -28,7 +28,7 @@ const Authors = (props) => {
       {props.token &&
       <div>
         <h2>Set Birthday</h2>
-        <AuthorForm authors={authors}/>
+        <AuthorForm authors={authors} handleNotification={props.handleNotification}/>
       </div>}
     </>
     )

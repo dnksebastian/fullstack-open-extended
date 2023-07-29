@@ -13,6 +13,7 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import RecommendBooks from './components/RecommendBooks'
+import Notification from './components/Notification'
 
 import { ALL_AUTHORS, ALL_BOOKS, BOOK_ADDED, GET_CURRENT_USER } from './queries'
 
@@ -54,11 +55,17 @@ const App = () => {
   const client = useApolloClient()
   const [token, setToken] = useState(null)
 
+  const [notificationMsg, setNotificationMsg] = useState('')
+
   const authorsResult = useQuery(ALL_AUTHORS)
   const booksResult = useQuery(ALL_BOOKS)
   const currentUser = useQuery(GET_CURRENT_USER, {
     skip: !localStorage.getItem('userToken')
   })
+
+
+
+
 
   useEffect(() => {
     setToken(localStorage.getItem('userToken'))
@@ -83,6 +90,13 @@ const App = () => {
     return <div>loading...</div>
   }
 
+  const showNotification = (message) => {
+    setNotificationMsg(message)
+    setTimeout(() => {
+      setNotificationMsg('')
+    }, 5000)
+  }
+
   const logout = () => {
     setToken(null)
     localStorage.clear()
@@ -99,11 +113,12 @@ const App = () => {
         {token && <Link style={linkStyle} to="/recommend">recommend</Link>}
         {token && <Link style={linkStyle} to="/logout" onClick={logout}>logout</Link>}
       </div>
+      <Notification message={notificationMsg} />
       <Routes>
-        <Route path='/' element={ <Authors token={token} allauthors={authorsResult.data.allAuthors}/> }/>
+        <Route path='/' element={ <Authors token={token} allauthors={authorsResult.data.allAuthors} handleNotification={showNotification}/> }/>
         <Route path='/books' element={ <Books allbooks={booksResult.data.allBooks}/> }/>
         <Route path='/login' element={ !token ? <LoginForm setToken={setToken} /> : <Navigate to="/" />}/>
-        <Route path='/add' element={ token ? <NewBook /> : <Navigate to="/" /> }/>
+        <Route path='/add' element={ token ? <NewBook setNotification={showNotification} /> : <Navigate to="/" /> }/>
         <Route path='/recommend' element={ currentUser ? <RecommendBooks allbooks={booksResult.data.allBooks} user={currentUser} /> : <Navigate to="/" /> }/>
         <Route path='/logout' element={ <Navigate to="/" /> }/>
         {/*  */}
