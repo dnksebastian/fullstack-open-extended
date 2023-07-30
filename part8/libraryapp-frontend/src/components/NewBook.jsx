@@ -14,10 +14,6 @@ const NewBook = ({ setNotification }) => {
   const [genres, setGenres] = useState([])
 
 
-  // const genreBooks = useQuery(BOOKS_BY_GENRE, {
-  //   variables: { genreFilter: genre }
-  // })
-
   const [ createBook ] = useMutation(ADD_BOOK, {
     refetchQueries: [ ALL_BOOKS , ALL_AUTHORS],
     onError: (err) => {
