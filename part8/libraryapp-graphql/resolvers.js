@@ -9,6 +9,20 @@ const Author = require('./models/author')
 const Book = require('./models/book')
 const User = require('./models/user')
 
+const DataLoader = require('dataloader');
+
+const authorsLoader = new DataLoader(async (authorIDs) => {
+  const allBooks = await Book.find({})
+  const authors = await Author.find({_id: authorIDs})
+
+  const authorsWithBookCount = authors.map((a) => {
+    return a.bookCount = allBooks.filter(b => b.author.toString() === a._id.toString()).length || new Error(`No result for ${a}`)
+  })
+
+  return authorsWithBookCount
+})
+
+
 
 const resolvers = {
     Query: {
@@ -42,9 +56,7 @@ const resolvers = {
     },
     Author: {
       bookCount: async (root) => {
-          const bookAuthor = await Author.findOne({name: root.name})
-          const booksByAuthor = await Book.find({ author: bookAuthor._id })
-          return booksByAuthor.length
+        return await authorsLoader.load(root._id)
       }
     },
     Mutation: {

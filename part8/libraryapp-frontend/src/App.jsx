@@ -63,10 +63,6 @@ const App = () => {
     skip: !localStorage.getItem('userToken')
   })
 
-
-
-
-
   useEffect(() => {
     setToken(localStorage.getItem('userToken'))
   }, [])// eslint-disable-line
