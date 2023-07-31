@@ -1,0 +1,17 @@
+{
+  "name": "firstproject",
+  "version": "1.0.0",
+  "description": "TypeScript examples",
+  "main": "index.js",
+  "scripts": {
+    "ts-node": "ts-node",
+    "multiply": "ts-node multiplier.ts",
+    "calculate": "ts-node calculator.ts"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}

@@ -11,8 +11,8 @@
 
 | Course part | Description | Repository |
 | :------------: | :-------: | :--------: |
-| 8 | GraphQL | <a href="#/" target="_blank">Repo</a>  |
-| 9 | - | <a href="#/" target="_blank">Repo</a>  |
+| 8 | GraphQL | <a href="https://github.com/dnksebastian/fullstack-open-extended/tree/main/part8" target="_blank">Repo</a>  |
+| 9 | TypeScript | <a href="https://github.com/dnksebastian/fullstack-open-extended/tree/main/part9" target="_blank">Repo</a>  |
 | 10 | - | <a href="#/" target="_blank">Repo</a>  |
 
 </div>
