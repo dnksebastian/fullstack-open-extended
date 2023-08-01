@@ -1,5 +1,25 @@
-const calculateBmi = (height: number, weight: number): string => {
-  const BMI = weight / ((height / 100) ** 2);
+interface calculateValues {
+  val1: number;
+  val2: number;
+}
+
+const checkArgs = (args: string[]): calculateValues => {
+  if (args.length < 4 || args.length > 4) {
+    throw new Error("Please enter your height and weight")
+  }
+
+  if (!isNaN(Number(args[2])) && !isNaN(Number(args[3]))) {
+    return {
+      val1: Number(args[2]),
+      val2: Number(args[3]),
+    }
+  } else {
+    throw new Error("Please enter height in cm and weight in kg")
+  }
+}
+
+const calculateBmi = (height: number, weight: number): string => {  
+  const BMI = weight / (height / 100) ** 2;
 
   if (BMI < 18.5) {
     return "Underweight (not healthy weight)";
@@ -17,9 +37,11 @@ const calculateBmi = (height: number, weight: number): string => {
 };
 
 try {
-  console.log(calculateBmi(180, 74));
+  const { val1, val2 } = checkArgs(process.argv)
+  calculateBmi(val1, val2)
+  console.log(calculateBmi(val1, val2))
 } catch (error: unknown) {
-  let errMsg = "Something went wrong: "
+  let errMsg = "Something went wrong: ";
 
   if (error instanceof Error) {
     errMsg += error.message;
