@@ -18,7 +18,7 @@ const checkArgs = (args: string[]): calculateValues => {
   }
 }
 
-const calculateBmi = (height: number, weight: number): string => {  
+export const calculateBmi = (height: number, weight: number): string => {  
   const BMI = weight / (height / 100) ** 2;
 
   if (BMI < 18.5) {
