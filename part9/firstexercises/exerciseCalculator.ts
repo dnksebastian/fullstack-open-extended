@@ -8,9 +8,9 @@ interface Result {
   average: number
 }
 
-interface ValidateInput {
+export interface ValidateInput {
   target: number,
-  days: number[]
+  daily_exercises: number[]
 }
 
 
@@ -30,17 +30,17 @@ const validateArguments = (args: string[]): ValidateInput => {
   });
 
   const target = validatedInput[0];
-  const days = validatedInput.slice(1);
+  const daily_exercises = validatedInput.slice(1);
 
   return {
     target,
-    days
+    daily_exercises
   };
 };
 
 
 
-const calculateExercises = (...args: number[]): Result => {
+export const calculateExercises = (...args: number[]): Result => {
 
   const inputArgs = [...args].slice(1);
   const target = [...args][0];
@@ -83,8 +83,8 @@ const calculateExercises = (...args: number[]): Result => {
 };
 
 try{
-  const { target, days } = validateArguments(process.argv);
-  const result = calculateExercises(target, ...days);
+  const { target, daily_exercises } = validateArguments(process.argv);
+  const result = calculateExercises(target, ...daily_exercises);
   console.log(result);
 }
 catch(err: unknown) {

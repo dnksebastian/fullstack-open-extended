@@ -1,34 +1,83 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { calculateBmi } from "./bmiCalculator";
+import { calculateExercises, ValidateInput } from "./exerciseCalculator";
+
+import { checkNumber } from "./utils/checkIfNumber";
 
 import express from "express";
+
 const app = express();
+app.use(express.json());
+
 
 app.get("/hello", (_req, res) => {
   res.send("Hello Full Stack!");
 });
 
 app.get(`/bmi`, (req, res) => {
-  let heightInput;
-  let weightInput;
 
-  if (req.query.height && req.query.weight) {
-    heightInput = +req.query.height;
-    weightInput = +req.query.weight;
+  if(!req.query.height || !req.query.weight) {
+    return res.status(400).send({
+      error: 'Missing height or weight input'
+    });
   }
 
-  if (heightInput && weightInput) {
-    try {
-      const calculationResult = calculateBmi(heightInput, weightInput);
-      return res.send({
-        weight: weightInput,
-        height: heightInput,
-        bmi: calculationResult,
+  try {
+    const heightValue: number = checkNumber(req.query.height);
+    const weightValue: number = checkNumber(req.query.weight);
+    const calculationResult: string = calculateBmi(heightValue, weightValue);
+
+    return res.send({
+      weight: weightValue,
+      heightValue: heightValue,
+      bmi: calculationResult
+    });
+  }
+  catch(err) {
+    return res.status(400).send({
+      error: 'malformatted params'
+    });
+  }
+
+});
+
+app.post("/exercises", (req, res) => {
+
+  try {
+    const input = req.body as ValidateInput;
+    const reqTarget = input.target;
+    const reqExercises = input.daily_exercises;
+  
+    if(!reqTarget || !reqExercises) {
+      return res.status(400).send({
+        error: 'parameters missing'
       });
-    } catch (err) {
-      return res.status(400).send({ error: "malformatted parameters" });
     }
-  } else {
-    return res.status(400).send({error: "malformatted parameters"});
+
+    const target: number = checkNumber(reqTarget);
+
+    try {
+      reqExercises.forEach(n => checkNumber(n));
+    }
+    catch (err) {
+      return res.status(400).send({
+        error: 'malformatted parameters'
+      });
+    }
+
+
+    const validatedExercises: number[] = reqExercises;
+
+    const calculationResult = calculateExercises(target, ...validatedExercises);
+    
+    console.log(calculationResult);
+  
+    return res.send({calculationResult});
+  }
+  catch(err) {
+    return res.status(400).send({
+      error: 'malformatted parameters'
+    });
   }
 
 });
