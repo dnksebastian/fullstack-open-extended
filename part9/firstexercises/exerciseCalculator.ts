@@ -14,23 +14,23 @@ export interface ValidateInput {
 }
 
 
-const validateArguments = (args: string[]): ValidateInput => {
+const parseArguments = (args: string[]): ValidateInput => {
   if (args.length < 4) throw new Error('Not enough arguments');
 
-
   const input = args.slice(2);
-  const validatedInput :number[] = [];
+  const targetAndDays :number[] = [];
 
   input.forEach((el) => {
-    if(!isNaN(Number(el))) {
-      validatedInput.push(+el);
+    if(typeof el === 'number' && !Number.isNaN(el)) {
+      targetAndDays.push(+el);
     } else {
       throw new Error('Provided values were not numbers!');
     }
+
   });
 
-  const target = validatedInput[0];
-  const daily_exercises = validatedInput.slice(1);
+  const target = targetAndDays[0];
+  const daily_exercises = targetAndDays.slice(1);
 
   return {
     target,
@@ -83,7 +83,7 @@ export const calculateExercises = (...args: number[]): Result => {
 };
 
 try{
-  const { target, daily_exercises } = validateArguments(process.argv);
+  const { target, daily_exercises } = parseArguments(process.argv);
   const result = calculateExercises(target, ...daily_exercises);
   console.log(result);
 }

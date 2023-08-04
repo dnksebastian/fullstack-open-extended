@@ -47,40 +47,34 @@ app.post("/exercises", (req, res) => {
     const input = req.body as ValidateInput;
     const reqTarget = input.target;
     const reqExercises = input.daily_exercises;
-  
+
     if(!reqTarget || !reqExercises) {
       return res.status(400).send({
         error: 'parameters missing'
       });
     }
-
-    const target: number = checkNumber(reqTarget);
-
-    try {
-      reqExercises.forEach(n => checkNumber(n));
-    }
-    catch (err) {
-      return res.status(400).send({
-        error: 'malformatted parameters'
-      });
-    }
-
-
-    const validatedExercises: number[] = reqExercises;
-
-    const calculationResult = calculateExercises(target, ...validatedExercises);
     
-    console.log(calculationResult);
-  
+    const target: number = checkNumber(reqTarget);
+    const exercises: number[] = [];
+
+    reqExercises.forEach((el) => {
+      if(typeof el === 'number' && !Number.isNaN(el)) {
+        exercises.push(el);
+      } else {
+        throw new Error('malformatted params');
+      }
+    });
+
+    const calculationResult = calculateExercises(target, ...exercises);
     return res.send({calculationResult});
-  }
-  catch(err) {
+
+  } catch (err) {
     return res.status(400).send({
-      error: 'malformatted parameters'
+      error: 'malformatted params'
     });
   }
-
-});
+}
+);
 
 const PORT = 3003;
 
