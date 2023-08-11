@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react'
 import diaryentries from '../services/diaryentries';
 
 import { DiaryEntry } from '../types/diaryEntryTypes';
+import axios from 'axios';
 
 interface AddEntryProps {
     allDiaries: DiaryEntry[],
-    setDiaries: React.Dispatch<React.SetStateAction<DiaryEntry[]>>
+    setDiaries: React.Dispatch<React.SetStateAction<DiaryEntry[]>>,
+    setError: React.Dispatch<React.SetStateAction<string>>
 }
 
 const INITIAL_FORM = {
@@ -25,7 +27,8 @@ const labelStyles = {
 const AddEntry = (props: AddEntryProps) => {
 
     const [formInput, setFormInput] = useState(INITIAL_FORM);
-    const diaries = props.allDiaries
+    const diaries = props.allDiaries;
+    const displayError = props.setError;
 
     useEffect(() => {
         console.log(formInput);
@@ -34,21 +37,30 @@ const AddEntry = (props: AddEntryProps) => {
     const handleFormChange = (event: React.SyntheticEvent) => {
         const target = event.target as HTMLInputElement
 
-        if (typeof target.value === 'string') {
-            setFormInput({...formInput,
-                [target.id]: target.value
-            });
-        }
+        setFormInput({...formInput,
+            [target.id]: target.value
+        });
     };
 
     const submitForm = async (e: React.SyntheticEvent) => {
         e.preventDefault();
-
-        const addedEntry = await diaryentries.addEntry(formInput);
-        
-        props.setDiaries(diaries.concat(addedEntry))
-
-        setFormInput(INITIAL_FORM);
+        try {
+            const addedEntry = await diaryentries.addEntry(formInput);
+            props.setDiaries(diaries.concat(addedEntry))
+            setFormInput(INITIAL_FORM);
+        }
+        catch(error: unknown) {
+            if(axios.isAxiosError(error)) {
+                if(error?.response?.data && typeof error?.response?.data === 'string') {
+                    const message = error.response.data.replace('Something went wrong. Error: ', '');
+                    displayError(message);
+                } else {
+                    displayError('Unrecognized axios error');
+                }
+            } else {
+                displayError("Unknown error: " + error)
+            }
+        }
     };
 
     return (

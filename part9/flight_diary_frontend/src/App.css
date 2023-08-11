@@ -56,3 +56,10 @@
     background-color: white;
     box-shadow: .15rem .2rem .2rem .1rem rgba(142, 104, 0, 0.329);
 }
+
+.errormsg {
+    padding: .5rem;
+    min-height: 2.5rem;
+    color: red;
+    max-width: max-content;
+}
