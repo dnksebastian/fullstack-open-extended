@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
-import diaryentries from '../services/diaryentries';
-
-import { DiaryEntry } from '../types/diaryEntryTypes';
+import { useState, useRef } from 'react'
 import axios from 'axios';
+
+import diaryentries from '../services/diaryentries';
+import { DiaryEntry, Weather, Visibility } from '../types/diaryEntryTypes';
 
 interface AddEntryProps {
     allDiaries: DiaryEntry[],
@@ -23,31 +23,46 @@ const labelStyles = {
 }
 
 
-
 const AddEntry = (props: AddEntryProps) => {
 
     const [formInput, setFormInput] = useState(INITIAL_FORM);
+
     const diaries = props.allDiaries;
     const displayError = props.setError;
 
-    useEffect(() => {
-        console.log(formInput);
-    }, [formInput])
+    const formRef = useRef<HTMLFormElement>(null);
+
+    const visibilityOptions:Visibility[] = ['great', 'good', 'ok', 'poor'];
+    const weatherOptions:Weather[] = ['sunny', 'rainy', 'cloudy', 'stormy', 'windy'];
 
     const handleFormChange = (event: React.SyntheticEvent) => {
         const target = event.target as HTMLInputElement
 
-        setFormInput({...formInput,
-            [target.id]: target.value
-        });
+        if(target.id === 'date') {
+            setFormInput({...formInput, date: target.value})
+        } else if(target.name === 'visibility-option') {
+            setFormInput({...formInput, visibility: target.value})
+        } else if(target.name === 'weather-option') {
+            setFormInput({...formInput, weather: target.value})
+        } else {
+            setFormInput({...formInput,
+                [target.id]: target.value
+            });
+        }
     };
+
 
     const submitForm = async (e: React.SyntheticEvent) => {
         e.preventDefault();
+
         try {
             const addedEntry = await diaryentries.addEntry(formInput);
             props.setDiaries(diaries.concat(addedEntry))
             setFormInput(INITIAL_FORM);
+
+            if(formRef.current !== null) {
+                formRef.current.reset()
+            }
         }
         catch(error: unknown) {
             if(axios.isAxiosError(error)) {
@@ -61,24 +76,39 @@ const AddEntry = (props: AddEntryProps) => {
                 displayError("Unknown error: " + error)
             }
         }
+
     };
 
     return (
         <div className="diary-form-wrap">
         <h2>Add new entry</h2>
-        <form onSubmit={submitForm}>
+        <form onSubmit={submitForm} ref={formRef}>
+
             <label style={labelStyles}>
                 <span>date</span>
-                <input type="text" id='date' name='date' value={formInput.date} onChange={handleFormChange}/>
+                <input type="date" id='date' name='date' onChange={handleFormChange}/>
             </label>
+
             <label style={labelStyles}>
                 <span>visibility</span>
-                <input type="text" id='visibility' name='visibility' value={formInput.visibility} onChange={handleFormChange}/>
+                {visibilityOptions.map(el => {
+                    return <div key={el}>
+                        <input type='radio' name='visibility-option' value={el} onChange={handleFormChange}/>
+                        <span>{el}</span>
+                        </div>
+                })}
             </label>
+
             <label style={labelStyles}>
                 <span>weather</span>
-                <input type="text" id='weather' name='weather' value={formInput.weather} onChange={handleFormChange}/>
+                {weatherOptions.map(el => {
+                    return <div key={el}>
+                        <input type="radio" name='weather-option' value={el} onChange={handleFormChange}/>
+                        <span>{el}</span>
+                    </div>
+                })}
             </label>
+
             <label style={labelStyles}>
                 <span>comment</span>
                 <input type="text" id='comment' name='comment' value={formInput.comment} onChange={handleFormChange}/>
