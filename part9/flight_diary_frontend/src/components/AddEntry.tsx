@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import axios from 'axios';
 
 import diaryentries from '../services/diaryentries';
-import { DiaryEntry, Weather, Visibility } from '../types/diaryEntryTypes';
+import { DiaryEntry, Weather, Visibility, initialEmptyDiary } from '../types/diaryEntryTypes';
 
 interface AddEntryProps {
     allDiaries: DiaryEntry[],
@@ -25,7 +25,7 @@ const labelStyles = {
 
 const AddEntry = (props: AddEntryProps) => {
 
-    const [formInput, setFormInput] = useState(INITIAL_FORM);
+    const [formInput, setFormInput] = useState<initialEmptyDiary>(INITIAL_FORM);
 
     const diaries = props.allDiaries;
     const displayError = props.setError;

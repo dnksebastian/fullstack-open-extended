@@ -8,20 +8,26 @@ const router = express.Router();
 
 router.get("/", (_req, res) => {
   const patients = patientsService.getPublicPatients();
+
+  if (!patients) {
+    res.status(404).send('Could not find patients');
+  }
+  
   res.send(patients);
 });
 
+router.get("/:id", (req, res) => {
+  const id = req.params.id;
+  const patient = patientsService.getSinglePublicPatient(id);
+  
+  if (!patient) {
+    res.status(404).send('Could not find patient with entered ID');
+  }
+
+  res.send(patient);
+});
+
 router.post("/", (req, res) => {
-  // const { name, dateOfBirth, ssn, gender, occupation } = req.body;
-
-  // const addedPatient = patientsService.addPatient({
-  //   name,
-  //   dateOfBirth,
-  //   ssn,
-  //   gender,
-  //   occupation
-  // });
-
   try {
     const newPatient = toNewPatientEntry(req.body);
     const addedPatient = patientsService.addPatient(newPatient);

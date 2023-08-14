@@ -9,13 +9,20 @@ const getPatients = (): Patient[] => {
 };
 
 const getPublicPatients = (): PatientFront[] => {
-    return patientsData.map(({id, name, dateOfBirth, gender, occupation}) => ({
+    return patientsData.map(({id, name, dateOfBirth, gender, occupation, entries}) => ({
         id,
         name,
         dateOfBirth,
         gender,
-        occupation
+        occupation,
+        entries
     }));
+};
+
+const getSinglePublicPatient = (id:string):PatientFront | undefined => {
+    const patients = getPublicPatients();
+    const patient = patients.find(p => p.id === id);
+    return patient;
 };
 
 
@@ -35,5 +42,6 @@ const addPatient = (patient: NewPatientEntry): Patient => {
 export default {
     getPatients,
     getPublicPatients,
+    getSinglePublicPatient,
     addPatient
 };
