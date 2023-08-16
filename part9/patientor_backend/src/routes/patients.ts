@@ -18,7 +18,7 @@ router.get("/", (_req, res) => {
 
 router.get("/:id", (req, res) => {
   const id = req.params.id;
-  const patient = patientsService.getSinglePublicPatient(id);
+  const patient = patientsService.getSinglePatient(id);
   
   if (!patient) {
     res.status(404).send('Could not find patient with entered ID');
