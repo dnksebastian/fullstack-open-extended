@@ -1,7 +1,9 @@
-import { NewPatientEntry, Gender, Entry } from "../types";
+import { NewPatientEntry, Gender } from "../types";
+
+import { parseEntries } from "./entries_utils";
 
 
-const isString = (text: unknown): text is string => {
+export const isString = (text: unknown): text is string => {
     return typeof text === 'string' || text instanceof String;
 };
 
@@ -11,10 +13,6 @@ const isDate = (date: string): boolean => {
 
 const isGender = (param: string): param is Gender => {
     return Object.values(Gender).map(v => v.toString()).includes(param);
-};
-
-const isEntries = (entries: unknown): entries is Entry[] => {
-    return Array.isArray(entries);
 };
 
 const parseName = (name: unknown): string => {
@@ -52,14 +50,6 @@ const parseOccupation = (occupation: unknown): string => {
     }
 
     return occupation;
-};
-
-const parseEntries = (entries: unknown): Entry[] => {
-
-    if(!entries || !isEntries(entries)) {
-        throw new Error('Incorrect or missing entries: ' + entries);
-    }
-    return entries;
 };
 
 const toNewPatientEntry = (object: unknown): NewPatientEntry => {
