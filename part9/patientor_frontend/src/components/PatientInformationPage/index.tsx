@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
 
+import EntriesList from "./EntriesList";
+
 import patientService from "../../services/patients";
 
 import MaleIcon from "@mui/icons-material/Male";
@@ -19,6 +21,7 @@ const PatientInformation = () => {
                 setPatient(fetchedPatient)
             }
         };
+
         fetchPatientData();
     }, [id])
 
@@ -41,6 +44,7 @@ const PatientInformation = () => {
         <h2>{patient.name} {genderIcon()}</h2>
         <p>{patient.ssn}</p>
         <p>occupation: {patient.occupation}</p>
+        <EntriesList entries={patient.entries} />
         </>
     )
 }
