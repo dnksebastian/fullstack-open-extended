@@ -45,9 +45,6 @@ interface OccupationalHealthcareEntry extends BaseEntry {
   type: "OccupationalHealthcare"
 }
 
-
-
-
 export interface Diagnosis {
   code: string;
   name: string;

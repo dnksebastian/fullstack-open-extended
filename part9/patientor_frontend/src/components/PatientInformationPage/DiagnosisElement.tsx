@@ -1,31 +1,22 @@
-import {useState, useEffect} from 'react';
+import { Diagnosis } from "../../types";
 
-import diagnosesServices from '../../services/diagnoses';
-import { Diagnosis } from '../../types';
-
-type DiagnosisElementProps = {
-    diagnose: string
+type DiagnosisElProps = {
+    diagnoses: Diagnosis[];
+    diagnoseCode: string;
 }
 
-const DiagnosisElement = (props: DiagnosisElementProps) => {
-    const [diagnosis, setDiagnosis] = useState<Diagnosis>();
+const DiagnosisElement = (props: DiagnosisElProps) => {
+    const diagnoseCode = props.diagnoseCode;
+    const diagnoses = props.diagnoses;
 
-    useEffect(() => {
-        const fetchDiagnose = async () => {
-            const fetchedDiagnose = await diagnosesServices.getSingleDiagnose(props.diagnose);
-            setDiagnosis(fetchedDiagnose[0]);
-        };
+    const codeDescription = diagnoses.find(d => d.code === diagnoseCode)
 
-        fetchDiagnose()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    
-    if(!diagnosis) {
-        return <li>{props.diagnose}</li>
-    }
+    if (!props) {
+        return <></>
+    };
 
     return (
-        <li>{props.diagnose} {diagnosis.name}</li>
+        <li>{diagnoseCode} {codeDescription?.name}</li>
     )
 }
 
