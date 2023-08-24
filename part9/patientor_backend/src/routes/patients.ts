@@ -2,7 +2,7 @@ import express from "express";
 
 import patientsService from "../services/patientsService";
 
-import toNewPatientEntry from "../utils/utils";
+import toNewPatientEntry from "../utils/patients_utils";
 
 const router = express.Router();
 
@@ -41,6 +41,30 @@ router.post("/", (req, res) => {
     }
     res.status(400).send(errMsg);
   }
+});
+
+router.post("/:id/entries", (req, res) => {
+  const patient = patientsService.getSinglePatient(req.params.id);
+
+  if (!patient) {
+    res.status(404).send({ error: 'Could not find patient with entered ID' });
+  }
+
+  try {
+    console.log(req.body);
+    // const entry = req.body;
+    // const patientUpdated = patientsService.addEntry(patient, entry);
+    // res.send(patientUpdated);
+  }
+  catch(err: unknown) {
+    let message = 'Something went wrong: ';
+
+    if(err instanceof Error) {
+      message += ' Error: ' + err.message;
+    }
+    res.status(400).send(message);
+  }
+
 });
 
 export default router;

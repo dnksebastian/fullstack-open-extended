@@ -2,7 +2,7 @@ import patientsData from '../../data/patients-full';
 
 import { v1 as uuid } from 'uuid';
 
-import { Patient, PatientFront, NewPatientEntry } from '../types';
+import { Patient, PatientFront, NewPatientEntry, EntryWithoutId } from '../types';
 
 const getPatients = (): Patient[] => {
     return patientsData;
@@ -39,9 +39,21 @@ const addPatient = (patient: NewPatientEntry): Patient => {
     return newPatient;
 };
 
+const addEntry = (patient: Patient, newEntry: EntryWithoutId) => {
+
+    const entryToAdd = { ...newEntry, id: uuid() };
+
+    const updatedPatient = { ...patient, entries: patient.entries.concat(entryToAdd) };
+
+    patientsData.map(p => p.id === updatedPatient.id ? updatedPatient : p);
+
+    return updatedPatient;
+};
+
 export default {
     getPatients,
     getPublicPatients,
     getSinglePatient,
-    addPatient
+    addPatient,
+    addEntry
 };

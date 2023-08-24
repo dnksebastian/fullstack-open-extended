@@ -1,0 +1,33 @@
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+    "description": "Testing new entry",
+    "date": "2023-01-01",
+    "specialist": "MD House",
+    "type": "Hospital"
+}
+
+###
+POST http://localhost:3001/api/patients/:id/entries
+Content-Type: application/json
+
+{
+    "description": "Testing new entry",
+    "date": "2023-01-01",
+    "specialist": "MD House",
+    "type": "Hospital",
+    "diagnosisCodes": ["Z57.1", "Z74.3"]
+}
+
+###
+POST http://localhost:3001/api/patients/:id/entries
+Content-Type: application/json
+
+{
+    "description": "Testing new entry",
+    "date": "2023-01-01",
+    "specialist": "MD House",
+    "type": "Hospital",
+    "diagnosisCodes": ["Z57.1", "Z74.3"]
+}
