@@ -2,32 +2,42 @@ POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/ent
 Content-Type: application/json
 
 {
-    "description": "Testing new entry",
     "date": "2023-01-01",
+    "description": "Test entry of type HealthCheck",
     "specialist": "MD House",
-    "type": "Hospital"
+    "type": "HealthCheck",
+    "healthCheckRating": 0
 }
 
-###
-POST http://localhost:3001/api/patients/:id/entries
-Content-Type: application/json
 
-{
-    "description": "Testing new entry",
-    "date": "2023-01-01",
-    "specialist": "MD House",
-    "type": "Hospital",
-    "diagnosisCodes": ["Z57.1", "Z74.3"]
-}
+# {
+#     "date": "2019-09-10",
+#     "specialist": "MD House",
+#     "type": "OccupationalHealthcare",
+#     "employerName": "FBI",
+#     "description": "Test entry of type OccupationalHealthcare without sickLeave"
+# }
 
-###
-POST http://localhost:3001/api/patients/:id/entries
-Content-Type: application/json
+# {
+#     "date": "2019-09-10",
+#     "specialist": "MD House",
+#     "type": "OccupationalHealthcare",
+#     "employerName": "FBI",
+#     "description": "Test entry of type OccupationalHealthcare with sickLeave",
+#     "sickLeave": {
+#         "startDate": "2019-08-05",
+#         "endDate": "2019-08-28"
+#         }
+# }
 
-{
-    "description": "Testing new entry",
-    "date": "2023-01-01",
-    "specialist": "MD House",
-    "type": "Hospital",
-    "diagnosisCodes": ["Z57.1", "Z74.3"]
-}
+# {
+#     "date": "2015-01-02",
+#     "type": "Hospital",
+#     "specialist": "MD House",
+#     "diagnosisCodes": ["S62.5"],
+#     "description": "Test entry of type Hospital",
+#     "discharge": {
+#         "date": "2015-01-16",
+#         "criteria": "Thumb has healed."
+#     }
+# }

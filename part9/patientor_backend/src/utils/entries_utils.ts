@@ -1,5 +1,5 @@
 import { Entry, Diagnose, NewEntryBase, EntryWithoutId, Discharge, HealthCheckRating, SickLeave } from '../types';
-import { parseDate, parseString, isString} from './universal_utils';
+import { isNumber, parseDate, parseString} from './universal_utils';
 
 
 const isEntry = (entry: unknown): entry is Entry => {
@@ -77,22 +77,40 @@ const parseDischarge = (discharge: unknown): Discharge => {
 
 
 
-const isHealthRating = (rating: unknown): rating is HealthCheckRating => {
+const isHealthRating = (rating: number): rating is HealthCheckRating => {
 
-    if(!rating || !isString(rating)) {
-        throw new Error('Invalid health rating');
-    }
+    // if(!rating || !isNumber(rating)) {
+    //     throw new Error('Invalid health rating');
+    // }
 
-    return Object.values(HealthCheckRating).includes(rating);
+    // return Object.values(HealthCheckRating).includes(rating);
+
+    // if (rating && isNumber(rating)) {
+    //     console.log(rating);
+    //     return Object.values(HealthCheckRating).includes(rating);
+    // }
+    // else {
+    //     throw new Error('Invalid health rating');
+    // }
+
+    return Object.values(HealthCheckRating).map(val => val as number).includes(rating);
 };
 
 
 const parseHealthRating = (rating: unknown): HealthCheckRating => {
-    if(!rating || !isHealthRating(rating)) {
+    const acceptedValues = [0, 1, 2, 3];
+
+    if(isNumber(rating) && acceptedValues.includes(rating) && isHealthRating(rating)) {
+        return rating;
+    } else {
         throw new Error('Missing or incorrect healthcheck rating');
     }
 
-    return rating;
+    // if(!rating || !isHealthRating(rating)) {
+    //     throw new Error('Missing or incorrect healthcheck rating');
+    // }
+
+    // return rating;
 };
 
 const parseSickLeave = (sickleave: unknown): SickLeave => {
@@ -135,23 +153,30 @@ export const toNewEntry = (object: unknown): EntryWithoutId => {
 
         switch(object.type) {
             case "Hospital":
-                if('discarge' in object) {
+                if('discharge' in object) {
                     return {
                         ...newBaseEntry,
                         type: object.type,
-                        discharge: parseDischarge(object.discarge)
+                        discharge: parseDischarge(object.discharge)
                     };
                 } else {
                     throw new Error('Incorrect or missing entry data');
                 }                
                 case "OccupationalHealthcare":
                     if ('sickLeave' in object && 'employerName' in object) {
+                        return {
+                            ...newBaseEntry,
+                            type: object.type,
+                            sickLeave: parseSickLeave(object.sickLeave),
+                            employerName: parseString(object.employerName, 'Employer name')
+                        };
+                    } else if (!('sickLeave' in object) && 'employerName' in object) {
                     return {
                         ...newBaseEntry,
                         type: object.type,
-                        sickLeave: parseSickLeave(object.sickLeave),
                         employerName: parseString(object.employerName, 'Employer name')
                     };
+
                 } else {
                     throw new Error('Incorrect or missing entry data');
                 }

@@ -3,6 +3,7 @@ import express from "express";
 import patientsService from "../services/patientsService";
 
 import toNewPatientEntry from "../utils/patients_utils";
+import { toNewEntry } from "../utils/entries_utils";
 
 const router = express.Router();
 
@@ -50,11 +51,15 @@ router.post("/:id/entries", (req, res) => {
     res.status(404).send({ error: 'Could not find patient with entered ID' });
   }
 
-  try {
-    console.log(req.body);
-    // const entry = req.body;
-    // const patientUpdated = patientsService.addEntry(patient, entry);
-    // res.send(patientUpdated);
+  try { 
+    const typedEntry = toNewEntry(req.body);
+
+    if (patient) {
+      const patientUpdated = patientsService.addEntry(patient, typedEntry);
+      res.send(patientUpdated);
+    } else {
+      throw new Error('Failed to add entry for chosen patient');
+    }
   }
   catch(err: unknown) {
     let message = 'Something went wrong: ';

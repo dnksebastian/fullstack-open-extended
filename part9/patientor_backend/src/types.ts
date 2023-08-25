@@ -34,21 +34,18 @@ export interface BaseEntry {
   
 interface HealthCheckEntry extends BaseEntry {
     type: "HealthCheck";
-    // type: EntryType.HealthCheck;
     healthCheckRating: HealthCheckRating;
 }
 
 interface HospitalEntry extends BaseEntry {
     discharge: Discharge,
     type: "Hospital"
-    // type: EntryType.Hospital
 }
 
 interface OccupationalHealthcareEntry extends BaseEntry {
     employerName: string,
     sickLeave?: SickLeave,
     type: "OccupationalHealthcare"
-    // type: EntryType.OccupationalHealthcare
 }
 
 export enum Gender {

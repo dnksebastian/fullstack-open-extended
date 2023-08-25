@@ -39,7 +39,7 @@ const addPatient = (patient: NewPatientEntry): Patient => {
     return newPatient;
 };
 
-const addEntry = (patient: Patient, newEntry: EntryWithoutId) => {
+const addEntry = (patient: Patient, newEntry: EntryWithoutId): Patient => {
 
     const entryToAdd = { ...newEntry, id: uuid() };
 
