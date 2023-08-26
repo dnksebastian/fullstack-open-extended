@@ -47,6 +47,8 @@ router.post("/", (req, res) => {
 router.post("/:id/entries", (req, res) => {
   const patient = patientsService.getSinglePatient(req.params.id);
 
+  console.log(req.body);
+  
   if (!patient) {
     res.status(404).send({ error: 'Could not find patient with entered ID' });
   }
