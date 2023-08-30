@@ -8,6 +8,8 @@ import NewEntryModal from "../AddEntryForm";
 
 import patientService from "../../services/patients";
 
+import { Patient } from "../../types";
+
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from '@mui/icons-material/Female';
 import TransgenderIcon from '@mui/icons-material/Transgender';
@@ -15,7 +17,7 @@ import TransgenderIcon from '@mui/icons-material/Transgender';
 
 const PatientInformation = () => {
     const id= useParams().id;
-    const [patient, setPatient] = useState<any>({});
+    const [patient, setPatient] = useState<Patient | null>(null);
     const [entryFormVisible, setEntryFormVisible] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState<string>('');
 
@@ -32,6 +34,14 @@ const PatientInformation = () => {
 
         fetchPatientData();
     }, [id])
+
+    const displayError = (err: string) => {
+        setErrorMsg(err);
+
+        setTimeout(() => {
+            setErrorMsg('');
+        }, 5000)
+    }
 
     if (!patient) {
         return <p>Could not find patient with entered ID.</p>
@@ -59,7 +69,7 @@ const PatientInformation = () => {
           <button onClick={() => {setEntryFormVisible(true)}}>Add new entry</button>
         </div>
         <div style={showIfVisible}>
-            <NewEntryModal setError={setErrorMsg}/>
+            <NewEntryModal setError={displayError} setPatient={setPatient}/>
         </div>     
 
         <Divider />   

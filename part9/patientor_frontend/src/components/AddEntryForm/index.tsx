@@ -5,8 +5,11 @@ import HealthCheckEntryForm from "./HealthCheckEntryForm";
 import OccupationalHealthcareForm from "./OHealthcareForm";
 import HospitalForm from "./HospitalEntryForm";
 
+import { Patient } from "../../types";
+
 type NewEntryProps = {
-    setError: React.Dispatch<React.SetStateAction<string>>
+    setError: (err: string) => void;
+    setPatient: React.Dispatch<React.SetStateAction<Patient | null>>
 }
 
 const NewEntryModal = (props: NewEntryProps) => {
@@ -17,7 +20,7 @@ const NewEntryModal = (props: NewEntryProps) => {
         case "":
             return <ChooseEntryView setEntryOption={setNewEntryOption} />
         case "HealthCheck":
-            return <HealthCheckEntryForm option={newEntryOption} setOption={setNewEntryOption} setError={props.setError}/>
+            return <HealthCheckEntryForm option={newEntryOption} setOption={setNewEntryOption} setError={props.setError} setPatient={props.setPatient}/>
         case "Occupational Healthcare":
             return <OccupationalHealthcareForm option={newEntryOption} setOption={setNewEntryOption}/>
         case "Hospital":
@@ -25,18 +28,6 @@ const NewEntryModal = (props: NewEntryProps) => {
         default:
             return <ChooseEntryView setEntryOption={setNewEntryOption} />
     }
-
-    // if(!newChosenEntry) {
-    //     return (
-    //         <div>
-    //             <h3>Choose new entry type:</h3>
-    //             <button onClick={() => {setNewChosenEntry('HealthCheck')}}>HealthCheck</button>
-    //             <button onClick={() => {setNewChosenEntry('Occupational Healthcare')}}>Occupational Healthcare</button>
-    //             <button onClick={() => {setNewChosenEntry('Hospital')}}>Hospital</button>
-    //         </div>
-    //     );
-    // }
-    
    
 };
 

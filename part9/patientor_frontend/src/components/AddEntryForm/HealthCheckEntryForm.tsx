@@ -1,5 +1,8 @@
-import {  TextField, Grid, Button } from '@mui/material';
+import { TextField, Grid, Button } from '@mui/material';
 import { useState, SyntheticEvent } from 'react';
+import axios from 'axios';
+
+import { Patient } from '../../types';
 
 import patients from '../../services/patients';
 import { useParams } from 'react-router-dom';
@@ -7,7 +10,8 @@ import { useParams } from 'react-router-dom';
 type HealthCheckRatingProps = {
     option: string;
     setOption: React.Dispatch<React.SetStateAction<string>>;
-    setError: React.Dispatch<React.SetStateAction<string>>
+    setError: (err: string) => void;
+    setPatient: React.Dispatch<React.SetStateAction<Patient | null>>
 };
 
 
@@ -18,7 +22,9 @@ const inputStyle = {
 
 const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
     const setOption = props.setOption;
-    // const setError = props.setError;
+    const setError = props.setError;
+    const setPatient = props.setPatient;
+
     const patientID = useParams().id;
 
     const [description, setDescription] = useState('');
@@ -28,7 +34,7 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
     const [diagnosisCodes, setDiagnosisCodes] = useState('');
 
 
-    const submitEntryForm = (event: SyntheticEvent) => {
+    const submitEntryForm = async (event: SyntheticEvent) => {
         event.preventDefault();
 
         const newHealthCheckEntryObject = {
@@ -40,9 +46,32 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
           type: props.option
         }
 
-        if(patientID) {
-          patients.addEntry(patientID, newHealthCheckEntryObject);
+        try {
+
+           if(!patientID) {
+            throw new Error('No patient with entered ID found')
+           };
+
+          const newPatient = await patients.addEntry(patientID, newHealthCheckEntryObject);
+
+          console.log(newPatient);
+          
+          setPatient(newPatient);
         }
+        catch(e: unknown){
+          if(axios.isAxiosError(e)) {
+            if(e?.response?.data && typeof e?.response?.data === 'string') {
+              const message = e.response.data.replace('Something went wrong:  Error: ', '');
+              console.error(message);
+              setError(message);
+            } else {
+              setError('Unrecognized axios error')
+            }
+          } else {
+            setError('Unknown error');
+          }
+        }
+
 
       };
       

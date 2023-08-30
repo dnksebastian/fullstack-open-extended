@@ -49,18 +49,15 @@ router.post("/:id/entries", (req, res) => {
 
   console.log(req.body);
   
-  if (!patient) {
-    res.status(404).send({ error: 'Could not find patient with entered ID' });
-  }
+  try {
 
-  try { 
     const typedEntry = toNewEntry(req.body);
 
-    if (patient) {
+    if (!patient) {
+      res.status(400).send({error: 'Could not find patient with entered ID'} );
+    } else {
       const patientUpdated = patientsService.addEntry(patient, typedEntry);
       res.send(patientUpdated);
-    } else {
-      throw new Error('Failed to add entry for chosen patient');
     }
   }
   catch(err: unknown) {
