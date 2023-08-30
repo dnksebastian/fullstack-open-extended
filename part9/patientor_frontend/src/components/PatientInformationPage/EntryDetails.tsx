@@ -39,6 +39,7 @@ const HospitalEntry: React.FC<{entry: Entry}> = ({ entry }) => {
         </div>
         <p>{entry.description}</p>
         {entry.diagnosisCodes}
+        <p>{entry.discharge.date} - {entry.discharge.criteria}</p>
         <p>diagnose by {entry.specialist}</p>
     </div>
     }

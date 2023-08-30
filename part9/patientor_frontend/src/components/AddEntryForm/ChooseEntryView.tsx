@@ -10,7 +10,7 @@ const ChooseEntryView = (props: ChooseEntryViewProps) => {
             <div>
                 <h3>Choose new entry type:</h3>
                 <button onClick={() => {setNewChosenEntry('HealthCheck')}}>HealthCheck</button>
-                <button onClick={() => {setNewChosenEntry('Occupational Healthcare')}}>Occupational Healthcare</button>
+                <button onClick={() => {setNewChosenEntry('OccupationalHealthcare')}}>Occupational Healthcare</button>
                 <button onClick={() => {setNewChosenEntry('Hospital')}}>Hospital</button>
             </div>
         );

@@ -21,10 +21,10 @@ const NewEntryModal = (props: NewEntryProps) => {
             return <ChooseEntryView setEntryOption={setNewEntryOption} />
         case "HealthCheck":
             return <HealthCheckEntryForm option={newEntryOption} setOption={setNewEntryOption} setError={props.setError} setPatient={props.setPatient}/>
-        case "Occupational Healthcare":
-            return <OccupationalHealthcareForm option={newEntryOption} setOption={setNewEntryOption}/>
+        case "OccupationalHealthcare":
+            return <OccupationalHealthcareForm option={newEntryOption} setOption={setNewEntryOption} setError={props.setError} setPatient={props.setPatient} />
         case "Hospital":
-            return <HospitalForm option={newEntryOption} setOption={setNewEntryOption}/>
+            return <HospitalForm option={newEntryOption} setOption={setNewEntryOption} setError={props.setError} setPatient={props.setPatient} />
         default:
             return <ChooseEntryView setEntryOption={setNewEntryOption} />
     }
