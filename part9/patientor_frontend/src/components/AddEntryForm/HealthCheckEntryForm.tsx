@@ -1,8 +1,12 @@
-import { TextField, Grid, Button } from '@mui/material';
+import { TextField, Grid, Button, MenuItem, InputLabel } from '@mui/material';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { DatePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
+
 import { useState, SyntheticEvent } from 'react';
 import axios from 'axios';
 
-import { Patient } from '../../types';
+import { Patient, HealthCheckRating } from '../../types';
 
 import patients from '../../services/patients';
 import { useParams } from 'react-router-dom';
@@ -27,11 +31,38 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
 
     const patientID = useParams().id;
 
+    const currentDate = dayjs()
+
     const [description, setDescription] = useState('');
-    const [birthDate, setBirthDate] = useState('');
+    const [birthDate, setBirthDate] = useState(currentDate);
     const [specialist, setSpecialist] = useState('');
-    const [healthRating, setHealthRating] = useState('');
+    const [healthRating, setHealthRating] = useState<HealthCheckRating | string>('');
     const [diagnosisCodes, setDiagnosisCodes] = useState('');
+
+
+    const onHealthRatingChange = (event: SelectChangeEvent<HealthCheckRating | string>) => {
+      event.preventDefault()
+      if (typeof event.target.value === "number") {
+      const value = event.target.value;
+
+      const healthRatingVal = Object.values(HealthCheckRating).filter(v => !isNaN(Number(v))).find(g => g === value);
+
+      if (healthRatingVal || healthRatingVal === 0) {
+        setHealthRating(healthRatingVal);
+      }
+      }
+    }
+
+    interface HealthCheckRatingOption {
+      value: HealthCheckRating | string;
+      label: number;
+    }
+
+  const healthRatings = Object.keys(HealthCheckRating).filter(v => isNaN(Number(v)))
+  
+  const healthCheckRatingOptions: HealthCheckRatingOption[] = healthRatings.map((v, i) => ({
+    value: v, label: i
+  }))
 
 
     const submitEntryForm = async (event: SyntheticEvent) => {
@@ -78,9 +109,9 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
       const onCancel = (event: SyntheticEvent) => {
         event.preventDefault();
         setDescription('')
-        setBirthDate('')
+        setBirthDate(currentDate);
         setSpecialist('')
-        setHealthRating('')
+        setHealthRating(HealthCheckRating.Healthy)
         setDiagnosisCodes('')
         setOption('')
     };
@@ -96,14 +127,13 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
           style={inputStyle}
           onChange={({ target }) => setDescription(target.value)}
         />
-        <TextField
-          label="Date"
-          placeholder="YYYY-MM-DD"
-          fullWidth
-          value={birthDate}
-          style={inputStyle}
-          onChange={({ target }) => setBirthDate(target.value)}
-        />
+
+        <DatePicker label="Birth date" value={birthDate} onChange={(newValue) => {
+          if(newValue) {
+            setBirthDate(newValue)
+          }
+          }} />
+
         <TextField
           label="Specialist"
           fullWidth
@@ -111,13 +141,20 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
           style={inputStyle}
           onChange={({ target }) => setSpecialist(target.value)}
         />
-        <TextField
-          label="Healthcheck rating"
-          fullWidth
-          value={healthRating}
-          style={inputStyle}
-          onChange={({ target }) => setHealthRating(target.value)}
-        />
+
+        <InputLabel id="healthcheck-select">Healthcheck rating</InputLabel>
+
+        <Select
+        style={inputStyle}
+        labelId='healthcheck-select'
+        fullWidth
+        value={healthRating}
+        onChange={onHealthRatingChange}
+        >
+          {healthCheckRatingOptions.map(option => <MenuItem key={option.label} value={option.label}>{option.value}</MenuItem>)}
+
+        </Select>
+
         <TextField
           label="Diagnosis codes"
           fullWidth
@@ -125,6 +162,7 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
           style={inputStyle}
           onChange={({ target }) => setDiagnosisCodes(target.value)}
         />
+
         <Grid container justifyContent={'space-between'}>
           <Grid item>
             <Button

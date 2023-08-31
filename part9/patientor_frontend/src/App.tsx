@@ -1,3 +1,7 @@
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+
+
 import { useState, useEffect } from "react";
 
 import axios from "axios";
@@ -26,6 +30,7 @@ const App = () => {
 
   
   return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
     <div className="App">
       <Router>
         <Container>
@@ -43,6 +48,7 @@ const App = () => {
         </Container>
       </Router>
     </div>
+    </LocalizationProvider>
   );
 };
 

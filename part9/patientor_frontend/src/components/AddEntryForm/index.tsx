@@ -5,7 +5,7 @@ import HealthCheckEntryForm from "./HealthCheckEntryForm";
 import OccupationalHealthcareForm from "./OHealthcareForm";
 import HospitalForm from "./HospitalEntryForm";
 
-import { Patient } from "../../types";
+import { Patient} from "../../types";
 
 type NewEntryProps = {
     setError: (err: string) => void;
@@ -14,7 +14,6 @@ type NewEntryProps = {
 
 const NewEntryModal = (props: NewEntryProps) => {
     const [newEntryOption, setNewEntryOption] = useState('');
-
 
     switch(newEntryOption) {
         case "":

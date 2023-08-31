@@ -1,5 +1,8 @@
 import { TextField, Grid, Button, Divider } from '@mui/material';
 import { useState, SyntheticEvent } from 'react';
+import { DatePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
+
 import axios from 'axios';
 
 import { Patient } from '../../types';
@@ -23,13 +26,14 @@ const inputStyle = {
 const HospitalForm = (props: HospitalFormProps) => {
     const {setError, setOption, setPatient} = props
     const patientID = useParams().id;
+    const currentDate = dayjs()
 
     const [description, setDescription] = useState('');
-    const [birthDate, setBirthDate] = useState('');
+    const [birthDate, setBirthDate] = useState(currentDate);
     const [specialist, setSpecialist] = useState('');
     const [diagnosisCodes, setDiagnosisCodes] = useState('');
 
-    const [dischargeDate, setDischargeDate] = useState('');
+    const [dischargeDate, setDischargeDate] = useState(currentDate);
     const [dischargeCriteria, setDischargeCriteria] = useState('');
 
 
@@ -83,10 +87,10 @@ const HospitalForm = (props: HospitalFormProps) => {
         event.preventDefault();
         setOption('');
         setDescription('')
-        setBirthDate('')
+        setBirthDate(currentDate)
         setSpecialist('')
         setDiagnosisCodes('')
-        setDischargeDate('')
+        setDischargeDate(currentDate)
         setDischargeCriteria('')
     };
 
@@ -101,14 +105,22 @@ const HospitalForm = (props: HospitalFormProps) => {
           style={inputStyle}
           onChange={({ target }) => setDescription(target.value)}
         />
-        <TextField
+        
+        {/* <TextField
           label="Date"
           placeholder="YYYY-MM-DD"
           fullWidth
           value={birthDate}
           style={inputStyle}
           onChange={({ target }) => setBirthDate(target.value)}
-        />
+        /> */}
+
+        <DatePicker label="Birth date" value={birthDate} onChange={(newValue) => {
+          if(newValue) {
+            setBirthDate(newValue)
+          }
+          }} />
+
         <TextField
           label="Specialist"
           fullWidth
@@ -127,13 +139,19 @@ const HospitalForm = (props: HospitalFormProps) => {
 
         <Divider textAlign="left">Discharge</Divider>
 
-        <TextField
+        {/* <TextField
           label="Discharge date"
           fullWidth
           value={dischargeDate}
           style={inputStyle}
           onChange={({ target }) => setDischargeDate(target.value)}
-        />
+        /> */}
+
+        <DatePicker label="Discharge date" value={dischargeDate} onChange={(newValue) => {
+          if(newValue) {
+            setDischargeDate(newValue)
+          }
+          }} />
 
         <TextField
           label="Discharge"
