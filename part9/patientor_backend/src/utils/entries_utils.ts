@@ -34,20 +34,6 @@ export const parseEntries = (entries: unknown): Entry[] => {
     return entries as Entry[];
 };
 
-// const isEntryType = (type: string): type is EntryType => {
-//     return Object.values(EntryType).map(v => v.toString()).includes(type);
-// };
-
-// const parseEntryType = (type: unknown):EntryType => {
-
-//     if(!type || !isString(type) || !isEntryType(type)) {
-//         throw new Error('Incorrect or missing entry type: ' + type);
-//     }
-
-//     return type;
-// };
-
-
 const parseDiagnosisCodes = (object: unknown): Array<Diagnose['code']> =>  {
     if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
       // we will just trust the data to be in correct form
@@ -79,20 +65,6 @@ const parseDischarge = (discharge: unknown): Discharge => {
 
 const isHealthRating = (rating: number): rating is HealthCheckRating => {
 
-    // if(!rating || !isNumber(rating)) {
-    //     throw new Error('Invalid health rating');
-    // }
-
-    // return Object.values(HealthCheckRating).includes(rating);
-
-    // if (rating && isNumber(rating)) {
-    //     console.log(rating);
-    //     return Object.values(HealthCheckRating).includes(rating);
-    // }
-    // else {
-    //     throw new Error('Invalid health rating');
-    // }
-
     return Object.values(HealthCheckRating).map(val => val as number).includes(rating);
 };
 
@@ -105,12 +77,6 @@ const parseHealthRating = (rating: unknown): HealthCheckRating => {
     } else {
         throw new Error('Missing or incorrect healthcheck rating');
     }
-
-    // if(!rating || !isHealthRating(rating)) {
-    //     throw new Error('Missing or incorrect healthcheck rating');
-    // }
-
-    // return rating;
 };
 
 const parseSickLeave = (sickleave: unknown): SickLeave => {

@@ -1,11 +1,13 @@
-import { TextField, Grid, Button, Divider } from '@mui/material';
+import { TextField, Grid, Button, Divider, InputLabel, MenuItem } from '@mui/material';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useState, SyntheticEvent } from 'react';
+
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 
 import axios from 'axios';
 
-import { Patient } from '../../types';
+import { Patient, Diagnosis } from '../../types';
 
 import patients from '../../services/patients';
 import { useParams } from 'react-router-dom';
@@ -16,6 +18,7 @@ type HospitalFormProps = {
     setOption: React.Dispatch<React.SetStateAction<string>>;
     setError: (err: string) => void;
     setPatient: React.Dispatch<React.SetStateAction<Patient | null>>
+    diagnoses: Diagnosis[]
 };
 
 const inputStyle = {
@@ -25,16 +28,25 @@ const inputStyle = {
 
 const HospitalForm = (props: HospitalFormProps) => {
     const {setError, setOption, setPatient} = props
+    const diagnoses = props.diagnoses
+    const diagnosesICD = diagnoses.map(d => d.code)
+
     const patientID = useParams().id;
     const currentDate = dayjs()
 
     const [description, setDescription] = useState('');
     const [birthDate, setBirthDate] = useState(currentDate);
     const [specialist, setSpecialist] = useState('');
-    const [diagnosisCodes, setDiagnosisCodes] = useState('');
+    const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
 
     const [dischargeDate, setDischargeDate] = useState(currentDate);
     const [dischargeCriteria, setDischargeCriteria] = useState('');
+
+
+    const handleDiagnosisCodesChange = (event: SelectChangeEvent<string[]>) => {
+      const { target: { value } } = event;
+      setDiagnosisCodes(typeof value === 'string' ? value.split(',') : value)
+    };
 
 
     const submitEntryForm = async (event: SyntheticEvent) => {
@@ -78,9 +90,6 @@ const HospitalForm = (props: HospitalFormProps) => {
            }
          }
 
-
-
-
     };
 
     const onCancel = (event: SyntheticEvent) => {
@@ -89,7 +98,7 @@ const HospitalForm = (props: HospitalFormProps) => {
         setDescription('')
         setBirthDate(currentDate)
         setSpecialist('')
-        setDiagnosisCodes('')
+        setDiagnosisCodes([])
         setDischargeDate(currentDate)
         setDischargeCriteria('')
     };
@@ -105,15 +114,6 @@ const HospitalForm = (props: HospitalFormProps) => {
           style={inputStyle}
           onChange={({ target }) => setDescription(target.value)}
         />
-        
-        {/* <TextField
-          label="Date"
-          placeholder="YYYY-MM-DD"
-          fullWidth
-          value={birthDate}
-          style={inputStyle}
-          onChange={({ target }) => setBirthDate(target.value)}
-        /> */}
 
         <DatePicker label="Birth date" value={birthDate} onChange={(newValue) => {
           if(newValue) {
@@ -129,23 +129,22 @@ const HospitalForm = (props: HospitalFormProps) => {
           onChange={({ target }) => setSpecialist(target.value)}
         />
 
-        <TextField
-          label="Diagnosis codes"
-          fullWidth
-          value={diagnosisCodes}
-          style={inputStyle}
-          onChange={({ target }) => setDiagnosisCodes(target.value)}
-        />
+        <InputLabel id="diagnosis-codes-select">Diagnoses</InputLabel>
+        <Select
+        style={inputStyle}
+        labelId='diagnosis-codes-select'
+        fullWidth
+        multiple
+        value={diagnosisCodes}
+        onChange={handleDiagnosisCodesChange}
+        >
+          {diagnosesICD.map(diagnose => (
+            <MenuItem key={diagnose} value={diagnose}>{diagnose}</MenuItem>
+          ))}
+        </Select>
+
 
         <Divider textAlign="left">Discharge</Divider>
-
-        {/* <TextField
-          label="Discharge date"
-          fullWidth
-          value={dischargeDate}
-          style={inputStyle}
-          onChange={({ target }) => setDischargeDate(target.value)}
-        /> */}
 
         <DatePicker label="Discharge date" value={dischargeDate} onChange={(newValue) => {
           if(newValue) {

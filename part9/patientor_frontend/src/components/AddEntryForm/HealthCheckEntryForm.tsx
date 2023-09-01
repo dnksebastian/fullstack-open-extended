@@ -163,14 +163,6 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
 
         </Select>
 
-        {/* <TextField
-          label="Diagnosis codes"
-          fullWidth
-          value={diagnosisCodes}
-          style={inputStyle}
-          onChange={({ target }) => setDiagnosisCodes(target.value)}
-        /> */}
-
         <InputLabel id="diagnosis-codes-select">Diagnoses</InputLabel>
         <Select
         style={inputStyle}

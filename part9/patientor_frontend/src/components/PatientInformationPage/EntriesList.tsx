@@ -12,13 +12,13 @@ type EntriesProps = {
 
 const EntriesList = (props: EntriesProps) => {
     const entries = props.entries;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
 
     useEffect(() => {
         const fetchDiagnoses = async () => {
             const fetchedDiagnoses = await diagnosesServices.getAllDiagnoses();
             setDiagnoses(fetchedDiagnoses);
-            console.log(diagnoses);
         };
 
         fetchDiagnoses();

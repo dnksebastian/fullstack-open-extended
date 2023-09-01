@@ -1,11 +1,12 @@
-import { TextField, Grid, Button, Divider } from '@mui/material';
+import { TextField, Grid, Button, Divider, InputLabel, MenuItem } from '@mui/material';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useState, SyntheticEvent } from 'react';
 import { DatePicker } from '@mui/x-date-pickers';
 
 import dayjs from 'dayjs';
 import axios from 'axios';
 
-import { Patient } from "../../types";
+import { Patient, Diagnosis } from "../../types";
 
 import patients from '../../services/patients';
 import { useParams } from "react-router-dom";
@@ -15,6 +16,7 @@ type OccupationalHealthcareFormProps = {
     setOption: React.Dispatch<React.SetStateAction<string>>;
     setError: (err: string) => void;
     setPatient: React.Dispatch<React.SetStateAction<Patient | null>>
+    diagnoses: Diagnosis[]
 };
 
 const inputStyle = {
@@ -26,18 +28,26 @@ const inputStyle = {
 const OccupationalHealthcareForm = (props: OccupationalHealthcareFormProps) => {
 
     const {setError, setOption, setPatient} = props
+    const diagnoses = props.diagnoses
+    const diagnosesICD = diagnoses.map(d => d.code)
+
     const patientID = useParams().id;
     const currentDate = dayjs()
 
     const [description, setDescription] = useState('');
     const [birthDate, setBirthDate] = useState(currentDate);
     const [specialist, setSpecialist] = useState('');
-    const [diagnosisCodes, setDiagnosisCodes] = useState('');
+    const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
    
     const [employer, setEmployer] = useState('');
 
     const [sickLeaveStart, setSickLeaveStart] = useState(currentDate);
     const [sickLeaveEnd, setSickLeaveEnd] = useState(currentDate);
+
+    const handleDiagnosisCodesChange = (event: SelectChangeEvent<string[]>) => {
+      const { target: { value } } = event;
+      setDiagnosisCodes(typeof value === 'string' ? value.split(',') : value)
+    };
 
 
     const submitEntryForm = async (event: SyntheticEvent) => {
@@ -88,7 +98,7 @@ const OccupationalHealthcareForm = (props: OccupationalHealthcareFormProps) => {
         setDescription('')
         setBirthDate(currentDate)
         setSpecialist('')
-        setDiagnosisCodes('')
+        setDiagnosisCodes([])
         setEmployer('')
         setSickLeaveStart(currentDate)
         setSickLeaveEnd(currentDate)
@@ -106,14 +116,6 @@ const OccupationalHealthcareForm = (props: OccupationalHealthcareFormProps) => {
           onChange={({ target }) => setDescription(target.value)}
         />
 
-        {/* <TextField
-          label="Date"
-          placeholder="YYYY-MM-DD"
-          fullWidth
-          value={birthDate}
-          style={inputStyle}
-          onChange={({ target }) => setBirthDate(target.value)}
-        /> */}
         <DatePicker label="Birth date" value={birthDate} onChange={(newValue) => {
           if(newValue) {
             setBirthDate(newValue)
@@ -128,13 +130,19 @@ const OccupationalHealthcareForm = (props: OccupationalHealthcareFormProps) => {
           onChange={({ target }) => setSpecialist(target.value)}
         />
 
-        <TextField
-          label="Diagnosis codes"
-          fullWidth
-          value={diagnosisCodes}
-          style={inputStyle}
-          onChange={({ target }) => setDiagnosisCodes(target.value)}
-        />
+        <InputLabel id="diagnosis-codes-select">Diagnoses</InputLabel>
+        <Select
+        style={inputStyle}
+        labelId='diagnosis-codes-select'
+        fullWidth
+        multiple
+        value={diagnosisCodes}
+        onChange={handleDiagnosisCodesChange}
+        >
+          {diagnosesICD.map(diagnose => (
+            <MenuItem key={diagnose} value={diagnose}>{diagnose}</MenuItem>
+          ))}
+        </Select>
 
         <TextField
           label="Employer"
@@ -146,26 +154,12 @@ const OccupationalHealthcareForm = (props: OccupationalHealthcareFormProps) => {
 
         <Divider textAlign="left" style={inputStyle}>Sickleave</Divider>
         
-        {/* <TextField
-          label="Sick Leave Start"
-          fullWidth
-          value={sickLeaveStart}
-          style={inputStyle}
-          onChange={({ target }) => setSickLeaveStart(target.value)}
-        /> */}
         <DatePicker label="Sick leave start" value={sickLeaveStart} onChange={(newValue) => {
           if(newValue) {
             setSickLeaveStart(newValue)
           }
           }} />
 
-        {/* <TextField
-          label="Sick Leave End"
-          fullWidth
-          value={sickLeaveEnd}
-          style={inputStyle}
-          onChange={({ target }) => setSickLeaveEnd(target.value)}
-        /> */}
         <DatePicker label="Sick leave end" value={sickLeaveEnd} onChange={(newValue) => {
           if(newValue) {
             setSickLeaveEnd(newValue)
