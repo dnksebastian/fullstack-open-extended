@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { useState, SyntheticEvent } from 'react';
 import axios from 'axios';
 
-import { Patient, HealthCheckRating } from '../../types';
+import { Patient, HealthCheckRating, Diagnosis } from '../../types';
 
 import patients from '../../services/patients';
 import { useParams } from 'react-router-dom';
@@ -15,7 +15,8 @@ type HealthCheckRatingProps = {
     option: string;
     setOption: React.Dispatch<React.SetStateAction<string>>;
     setError: (err: string) => void;
-    setPatient: React.Dispatch<React.SetStateAction<Patient | null>>
+    setPatient: React.Dispatch<React.SetStateAction<Patient | null>>;
+    diagnoses: Diagnosis[]
 };
 
 
@@ -29,6 +30,9 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
     const setError = props.setError;
     const setPatient = props.setPatient;
 
+    const diagnoses = props.diagnoses
+    const diagnosesICD = diagnoses.map(d => d.code)
+
     const patientID = useParams().id;
 
     const currentDate = dayjs()
@@ -37,7 +41,13 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
     const [birthDate, setBirthDate] = useState(currentDate);
     const [specialist, setSpecialist] = useState('');
     const [healthRating, setHealthRating] = useState<HealthCheckRating | string>('');
-    const [diagnosisCodes, setDiagnosisCodes] = useState('');
+    const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
+
+
+    const handleDiagnosisCodesChange = (event: SelectChangeEvent<string[]>) => {
+      const { target: { value } } = event;
+      setDiagnosisCodes(typeof value === 'string' ? value.split(',') : value)
+    };
 
 
     const onHealthRatingChange = (event: SelectChangeEvent<HealthCheckRating | string>) => {
@@ -84,8 +94,6 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
            };
 
           const newPatient = await patients.addEntry(patientID, newHealthCheckEntryObject);
-
-          console.log(newPatient);
           
           setPatient(newPatient);
         }
@@ -112,7 +120,7 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
         setBirthDate(currentDate);
         setSpecialist('')
         setHealthRating(HealthCheckRating.Healthy)
-        setDiagnosisCodes('')
+        setDiagnosisCodes([])
         setOption('')
     };
 
@@ -155,13 +163,27 @@ const HealthCheckEntryForm = (props: HealthCheckRatingProps) => {
 
         </Select>
 
-        <TextField
+        {/* <TextField
           label="Diagnosis codes"
           fullWidth
           value={diagnosisCodes}
           style={inputStyle}
           onChange={({ target }) => setDiagnosisCodes(target.value)}
-        />
+        /> */}
+
+        <InputLabel id="diagnosis-codes-select">Diagnoses</InputLabel>
+        <Select
+        style={inputStyle}
+        labelId='diagnosis-codes-select'
+        fullWidth
+        multiple
+        value={diagnosisCodes}
+        onChange={handleDiagnosisCodesChange}
+        >
+          {diagnosesICD.map(diagnose => (
+            <MenuItem key={diagnose} value={diagnose}>{diagnose}</MenuItem>
+          ))}
+        </Select>
 
         <Grid container justifyContent={'space-between'}>
           <Grid item>
